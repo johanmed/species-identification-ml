@@ -10,7 +10,7 @@ import keras_tuner as kt # for finetuning
 
 class ClassificationSpecies(kt.HyperModel):
     """
-    Represents hyperparameter tuning for clustering task
+    Represents hyperparameter tuning for binary classification task
     """
     
     def build(self, hp):
@@ -41,24 +41,24 @@ class ClassificationSpecies(kt.HyperModel):
         
         # Define output layers
         
-        output_layer=tf.keras.layers.Dense(units=2, activation='softmax', name='output_species') # need to vary n_neurons in output layer, 2 for binary classification and 6 for multiclass
+        output_layer=tf.keras.layers.Dense(units=6, activation='softmax', name='output_species') # Need to match the number of neurons in the output layer with the number of classes targeted
         
         layers={} # store layers in order for actual construction of neural network
         
         # Pass executed layers in order
         
-        layers['input']=tf.keras.layers.Input(shape=(3,))
+        layers['input']=tf.keras.layers.Input(shape=(2,))
         
         for k in hidden_layers_dict:
             layers[f'hidden{k}']=hidden_layers_dict[k](layers[list(layers.keys())[-1]]) # layer output passed to hidden is the previous one before the 2 above just added
             
         layers['concatenated']=concat_layer([layers['input'], layers[list(layers.keys())[-1]]]) # last layer of the dictionary passed with the input layer for concatenation
-        layers['output_species']=output_layer1(layers['concatenated'])
+        layers['output_species']=output_layer(layers['concatenated'])
         
         
         neural_model_unsup=tf.keras.Model(inputs=[layers['input']], outputs=[layers['output_species']]) # specify model inputs and outputs
         
-        neural_model_unsup.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy']) # compile model
+        neural_model_unsup.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy']) # compile model
         
         return neural_model_unsup
         
@@ -74,3 +74,6 @@ class ClassificationSpecies(kt.HyperModel):
             X=normalization_layer(X)
         
         return neural_model.fit(X, y, batch_size=batch_size, **kwargs)
+        
+        
+
