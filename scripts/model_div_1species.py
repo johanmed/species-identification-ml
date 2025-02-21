@@ -41,6 +41,8 @@ hot_encoder=OneHotEncoder(sparse_output=False)
 
 species_encoded=hot_encoder.fit_transform(np.array(data.iloc[:, -1]).reshape(-1, 1))
 
+species_encodings=hot_encoder.categories_ # save species_encoding to traceback the species
+
 data[['species_encoded_1', 'species_encoded_2']]=species_encoded # number of categories determined the number of new features added, here 2
 
 
@@ -110,6 +112,18 @@ else:
 
 
 
-# 7. Train the best model for longer
+# 7. Train the best model for longer and test
 
-#best_model.fit(X_train, y_train, validation_data=(X_valid, y_valid), epochs=10)
+best_model.fit(X_train, y_train, validation_data=(X_valid, y_valid), epochs=10)
+
+proba_arr = best_model.predict(X_test, y_valid)
+
+species_pred=[]
+
+for arr in proba_arr:
+    for ind, val in enumerate(arr):
+        if val == max(arr)
+            species_pred.append(species_encodings[ind])
+            break
+            
+print('The predictions are: ', species_pred)
