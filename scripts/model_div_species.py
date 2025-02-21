@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize=(20, 10))
 data.hist(ax=ax, bins=50, color='black', alpha=0.7)
 plt.show()
-fig.savefig("../output/Quality_Control_Features"), dpi=500)
+fig.savefig("../output/Quality_Control_Features", dpi=500)
 
 
 # 3. Define training, validation and test sets
@@ -66,19 +66,19 @@ else:
     
     hyperband_tuner=kt.Hyperband(ClassificationSpecies(), objective='val_accuracy', seed=2025, max_epochs=10, factor=2, hyperband_iterations=2, overwrite=True, directory='multi_species_modeling', project_name='hyperband')
         
-        checkpoint_cb = tf.keras.callbacks.ModelCheckpoint('multi_species_modeling/best_checkpoint.keras', save_best_only=True)
+    checkpoint_cb = tf.keras.callbacks.ModelCheckpoint('multi_species_modeling/best_checkpoint.keras', save_best_only=True)
 
-        early_stopping_cb=tf.keras.callbacks.EarlyStopping(patience=2) # callback to prevent overfitting
+    early_stopping_cb=tf.keras.callbacks.EarlyStopping(patience=2) # callback to prevent overfitting
     
-        tensorboard_cb=tf.keras.callbacks.TensorBoard(Path(hyperband_tuner.project_dir)/'tensorflow'/strftime("run_%Y_%m_%d_%H_%M_%S")) # callback for tensorboard visualization
+    tensorboard_cb=tf.keras.callbacks.TensorBoard(Path(hyperband_tuner.project_dir)/'tensorflow'/strftime("run_%Y_%m_%d_%H_%M_%S")) # callback for tensorboard visualization
     
-        hyperband_tuner.search(X_train, y_train, epochs=10, validation_data=(X_valid, y_valid), callbacks=[checkpoint_cb, early_stopping_cb, tensorboard_cb])
+    hyperband_tuner.search(X_train, y_train, epochs=10, validation_data=(X_valid, y_valid), callbacks=[checkpoint_cb, early_stopping_cb, tensorboard_cb])
     
-        top3_models=hyperband_tuner.get_best_models(num_models=3)
+    top3_models=hyperband_tuner.get_best_models(num_models=3)
     
-        best_model=top3_models[0] # select the best model
+    best_model=top3_models[0] # select the best model
         
-        best_model.save('multi_species_modeling/best_model.keras') # save it
+    best_model.save('multi_species_modeling/best_model.keras') # save it
 
 
 # 6. Train the best model for longer
