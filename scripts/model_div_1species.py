@@ -41,7 +41,7 @@ hot_encoder=OneHotEncoder(sparse_output=False)
 
 species_encoded=hot_encoder.fit_transform(np.array(data.iloc[:, -1]).reshape(-1, 1))
 
-species_encodings=hot_encoder.categories_ # save species_encoding to traceback the species
+species_encodings=hot_encoder.categories_[0] # save species_encoding to traceback the species
 
 data[['species_encoded_1', 'species_encoded_2']]=species_encoded # number of categories determined the number of new features added, here 2
 
@@ -64,6 +64,8 @@ print('data train looks like:\n', data_train.head())
 X_train, X_valid, X_test = data_train.iloc[:, :2], data_valid.iloc[:, :2], data_test.iloc[:, :2] # take only the first 2 features -> heterozygosity and FROH
 
 y_train, y_valid, y_test = data_train.iloc[:, 3:], data_valid.iloc[:, 3:], data_test.iloc[:, 3:] # take the remaining features omitting features with names
+
+species_train, species_valid, species_test = data_train.iloc[:,2], data_valid.iloc[:, 2], data_test.iloc[:, 2]
 
 print('X train looks like:\n', X_train.head())
 
@@ -114,16 +116,21 @@ else:
 
 # 7. Train the best model for longer and test
 
-best_model.fit(X_train, y_train, validation_data=(X_valid, y_valid), epochs=10)
+best_model.fit(X_train, y_train, validation_data=(X_valid, y_valid))
 
-proba_arr = best_model.predict(X_test, y_valid)
+proba_arr = best_model.predict(X_test)
+
+print('The original species were: ', species_encodings)
 
 species_pred=[]
 
 for arr in proba_arr:
     for ind, val in enumerate(arr):
-        if val == max(arr)
+        if val == max(arr):
             species_pred.append(species_encodings[ind])
             break
             
-print('The predictions are: ', species_pred)
+
+from sklearn.metrics import classification_report
+
+print('The comparison of the predicted species to the real shows the following results: \n', classification_report(species_test, species_pred))

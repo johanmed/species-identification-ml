@@ -41,7 +41,7 @@ class ClassificationSpecies(kt.HyperModel):
         
         # Define output layers
         
-        output_layer=tf.keras.layers.Dense(units=2, activation='softmax', name='output_species') # Need to match the number of neurons in the output layer with the number of classes targeted
+        output_layer=tf.keras.layers.Dense(units=6, activation='softmax', name='output_species') # Need to match the number of neurons in the output layer with the number of classes targeted
         
         layers={} # store layers in order for actual construction of neural network
         
